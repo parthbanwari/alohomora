@@ -1,38 +1,8 @@
-from flask import render_template, request, redirect, url_for, session, flash, Blueprint
-from feedback import feedback_bp
+from flask import Blueprint, current_app, render_template, request, redirect, url_for, session, flash
 import json
-import psycopg2
-from datetime import datetime
 from functools import wraps
-import os
-
-import os
-DATABASE_URL = os.getenv("DATABASE_URL")
-if not DATABASE_URL:
-    raise RuntimeError("DATABASE_URL is not set!")
-
-conn = psycopg2.connect(DATABASE_URL)
-cursor = conn.cursor()
 
 feedback_bp = Blueprint('feedback_bp', __name__)
-
-
-# Create table if not exists
-cursor.execute("""
-    CREATE TABLE IF NOT EXISTS form_responses (
-        id SERIAL PRIMARY KEY,
-        selected_class TEXT,
-        response JSONB,
-        submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )
-""")
-conn.commit()
-
-json_path = os.path.join(os.path.dirname(__file__), 'form-data.json')
-
-with open(json_path, encoding='utf-8') as f:
-    questions_data = json.load(f)
-
 
 # Dummy credentials
 ADMIN_USERNAME = "admin"
@@ -48,10 +18,40 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-# Routes using the blueprint
+
+# Helper function to get DB connection and cursor
+def get_db_cursor():
+    conn = current_app.config.get('DB_CONN')
+    if not conn:
+        raise RuntimeError("Database connection not initialized")
+    return conn.cursor(), conn
+
+
+# Create table if not exists - you can call this once when app starts
+def create_table():
+    cursor, conn = get_db_cursor()
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS form_responses (
+            id SERIAL PRIMARY KEY,
+            selected_class TEXT,
+            response JSONB,
+            submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+    conn.commit()
+
+
+# Load questions JSON once (you can also load this in app factory and pass via config if you want)
+import os
+json_path = os.path.join(os.path.dirname(__file__), 'form-data.json')
+with open(json_path, encoding='utf-8') as f:
+    questions_data = json.load(f)
+
+
 @feedback_bp.route("/", methods=["GET", "POST"])
 def form():
     selected_class = request.args.get("class", None)
+    cursor, conn = get_db_cursor()
 
     if request.method == "POST":
         responses = request.form.to_dict(flat=False)
@@ -101,6 +101,7 @@ def logout():
 @feedback_bp.route("/responses")
 @login_required
 def view_responses():
+    cursor, conn = get_db_cursor()
     cursor.execute("SELECT id, selected_class, response, submitted_at FROM form_responses ORDER BY submitted_at DESC")
     rows = cursor.fetchall()
 
@@ -111,7 +112,7 @@ def view_responses():
             parsed_response = response_json if isinstance(response_json, dict) else json.loads(response_json)
         except Exception:
             parsed_response = {"error": "Invalid JSON"}
-        
+
         parsed_rows.append({
             "id": id,
             "selected_class": selected_class,

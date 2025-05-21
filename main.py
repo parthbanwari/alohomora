@@ -1,9 +1,16 @@
-import sys, os
-from main_app import create_app
+from flask import Flask
+from db import init_db
+from feedback import feedback_bp
 
-sys.path.append(os.path.abspath(os.path.dirname(__file__)))
+def create_app():
+    app = Flask(__name__)
+    # Load env already done before this
 
-app = create_app()
+    # Initialize DB connection
+    conn = init_db()
+    app.config['DB_CONN'] = conn
 
-if __name__ == "__main__":
-    app.run(debug=True)
+    # Register blueprint
+    app.register_blueprint(feedback_bp)
+
+    return app
