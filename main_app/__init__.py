@@ -1,4 +1,9 @@
 from flask import Flask
+import sys,os
+
+import sys, os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 
 def create_app():
     app = Flask(__name__)
