@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>करियरशाला फॉर्म</title>
+    <style>
+        /* Base Styles */
+        :root {
+            --primary-color: #4a6fdc;
+            --primary-dark: #3558b2;
+            --accent-color: #ff7043;
+            --light-bg: #f5f7fa;
+            --text-color: #333;
+            --border-radius: 8px;
+            --box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background-color: var(--light-bg);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+        
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.2rem;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        h1:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: var(--accent-color);
+            border-radius: 4px;
+        }
+        
+        h2 {
+            color: var(--primary-dark);
+            margin: 30px 0 20px;
+            font-size: 1.5rem;
+            border-left: 4px solid var(--accent-color);
+            padding-left: 10px;
+        }
+        
+        /* Form Elements */
+        form {
+            margin-top: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            border-left: 3px solid var(--primary-color);
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #444;
+        }
+        
+        select, input[type="text"], textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            transition: border 0.3s ease;
+        }
+        
+        select:focus, input[type="text"]:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(74, 111, 220, 0.2);
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        /* Radio & Checkbox */
+        .option-group {
+            margin: 10px 0;
+        }
+        
+        .radio-option, .checkbox-option {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        input[type="radio"], input[type="checkbox"] {
+            margin-right: 10px;
+            cursor: pointer;
+        }
+        
+        /* NPS Scale */
+        .nps-scale {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 15px 0;
+        }
+        
+        .nps-labels {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-top: 5px;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .nps-options {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+        }
+        
+        .nps-option {
+            text-align: center;
+        }
+        
+        /* Button Styles */
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 16px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            display: block;
+            margin: 20px auto 0;
+            font-weight: bold;
+        }
+        
+        button:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>करियरशाला फॉर्म</h1>
+
+        {% if not selected_class %}
+            <form method="get">
+                <div class="form-group">
+                    <label>कक्षा चुनें / Select Class:</label>
+                    <select name="class">
+                        <option value="9th">9वीं</option>
+                        <option value="10th">10वीं</option>
+                        <option value="11th">11वीं</option>
+                        <option value="12th">12वीं</option>
+                    </select>
+                </div>
+                <button type="submit">जारी रखें</button>
+            </form>
+        {% else %}
+            <form method="post">
+                <h2>सामान्य प्रश्न / Common Questions</h2>
+                {% for q in common_questions %}
+                    <div class="form-group">
+                        <label>{{ q.label }}</label>
+                        {% if q.type == "mcq" %}
+                            {% for opt in q.options %}
+                                <div class="radio-option">
+                                    <input type="radio" id="{{ q.label }}_{{ opt }}" name="{{ q.label }}" value="{{ opt }}">
+                                    <label for="{{ q.label }}_{{ opt }}">{{ opt }}</label>
+                                </div>
+                            {% endfor %}
+                        {% elif q.type == "checkbox" %}
+                            {% for opt in q.options %}
+                                <div class="checkbox-option">
+                                    <input type="checkbox" id="{{ q.label }}_{{ opt }}" name="{{ q.label }}" value="{{ opt }}">
+                                    <label for="{{ q.label }}_{{ opt }}">{{ opt }}</label>
+                                </div>
+                            {% endfor %}
+                        {% elif q.type == "textarea" %}
+                            <textarea name="{{ q.label }}" placeholder="अपना उत्तर यहां लिखें..."></textarea>
+                        {% elif q.type == "nps" %}
+                            <div class="nps-scale">
+                                <div class="nps-options">
+                                    {% for i in range(q.scale_min, q.scale_max + 1) %}
+                                        <div class="nps-option">
+                                            <input type="radio" id="{{ q.label }}_{{ i }}" name="{{ q.label }}" value="{{ i }}">
+                                            <label for="{{ q.label }}_{{ i }}">{{ i }}</label>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="nps-labels">
+                                <span>{{ q.min_label }}</span>
+                                <span>{{ q.max_label }}</span>
+                            </div>
+                        {% else %}
+                            <input type="text" name="{{ q.label }}" placeholder="अपना उत्तर यहां लिखें...">
+                        {% endif %}
+                    </div>
+                {% endfor %}
+
+                <h2>कक्षा {{ selected_class }} के लिए विशेष प्रश्न / Grade-Specific Questions</h2>
+                {% for q in grade_specific_questions %}
+                    <div class="form-group">
+                        <label>{{ q.label }}</label>
+                        {% if q.type == "mcq" %}
+                            {% for opt in q.options %}
+                                <div class="radio-option">
+                                    <input type="radio" id="{{ q.label }}_{{ opt }}" name="{{ q.label }}" value="{{ opt }}">
+                                    <label for="{{ q.label }}_{{ opt }}">{{ opt }}</label>
+                                </div>
+                            {% endfor %}
+                        {% elif q.type == "checkbox" %}
+                            {% for opt in q.options %}
+                                <div class="checkbox-option">
+                                    <input type="checkbox" id="{{ q.label }}_{{ opt }}" name="{{ q.label }}" value="{{ opt }}">
+                                    <label for="{{ q.label }}_{{ opt }}">{{ opt }}</label>
+                                </div>
+                            {% endfor %}
+                        {% elif q.type == "textarea" %}
+                            <textarea name="{{ q.label }}" placeholder="अपना उत्तर यहां लिखें..."></textarea>
+                        {% else %}
+                            <input type="text" name="{{ q.label }}" placeholder="अपना उत्तर यहां लिखें...">
+                        {% endif %}
+                    </div>
+                {% endfor %}
+
+                <button type="submit">जमा करें (Submit)</button>
+            </form>
+        {% endif %}
+    </div>
+</body>
+</html>
