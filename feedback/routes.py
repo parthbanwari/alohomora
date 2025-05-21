@@ -1,4 +1,4 @@
-from flask import render_template, request, redirect, url_for, session, flash
+from flask import render_template, request, redirect, url_for, session, flash, Blueprint
 from feedback import feedback_bp
 import json
 import psycopg2
@@ -14,7 +14,7 @@ if not DATABASE_URL:
 conn = psycopg2.connect(DATABASE_URL)
 cursor = conn.cursor()
 
-
+feedback_bp = Blueprint('feedback_bp', __name__)
 
 
 # Create table if not exists
