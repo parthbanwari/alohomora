@@ -15,7 +15,8 @@ def create_app():
     app.register_blueprint(main_bp)
 
     # Register feedback blueprint (already has its own templates folder)
-    app.register_blueprint(feedback_bp)
+    app.register_blueprint(feedback_bp, url_prefix="/feedback")
+
 
     return app
 
