@@ -1,22 +1,8 @@
-from flask import Flask
-import sys,os
+from flask import Blueprint
 
-import sys, os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+# Create a blueprint for the main app
+main_bp = Blueprint('main_bp', __name__, 
+                    template_folder='templates')
 
-
-
-def create_app():
-    app = Flask(__name__)
-    app.secret_key = "your-secret-key"
-
-    from main_app.routes import main_bp
-    from feedback.routes import feedback_bp  # ← import blueprint
-
-    app.register_blueprint(main_bp)
-    app.register_blueprint(feedback_bp, url_prefix="/feedback")  # ← attach at /feedback
-
-    app.config['SESSION_COOKIE_SECURE'] = True
-    app.config['SESSION_COOKIE_HTTPONLY'] = True
-
-    return app
+# Import routes after creating the blueprint
+from . import routes

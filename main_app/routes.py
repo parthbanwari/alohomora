@@ -1,7 +1,11 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, url_for
 
-main_bp = Blueprint('main_bp', __name__)
+# Get the blueprint from __init__.py
+from main_app import main_bp
 
 @main_bp.route("/")
 def homepage():
-    return render_template("index.html")  # Should be in main_app/templates/index.html
+    # Render the main homepage
+    return render_template("index.html")
+
+# If you need any additional routes for your main app, add them here
