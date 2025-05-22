@@ -14,6 +14,9 @@ def create_app():
     conn = init_db()
     app.config['DB_CONN'] = conn
 
+    from feedback.routes import create_table
+    create_table()
+
     # Configure session security
     app.config['SESSION_COOKIE_SECURE'] = True
     app.config['SESSION_COOKIE_HTTPONLY'] = True
