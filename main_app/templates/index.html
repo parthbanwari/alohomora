@@ -6,7 +6,7 @@
 <body>
     <h1>Welcome</h1>
     
-    <button onclick="window.location.href='/feedback'" class="your-button-class">Go to Feedback Form</button>
+    <a href="{{ url_for('feedback_bp.form') }}">Feedback</a>
     <a href="/app2"><button>dashboard</button></a>
 </body>
 </html>
