@@ -3,6 +3,7 @@ import json
 from functools import wraps
 
 feedback_bp = Blueprint('feedback_bp', __name__,template_folder='templates')
+from feedback import feedback_bp
 
 # Helper function to get DB connection and cursor
 def get_db_cursor():

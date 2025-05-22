@@ -16,7 +16,9 @@ def create_app():
 
     # Import and register blueprints
     from main_app import main_bp
+    import main_app.routes
     from feedback import feedback_bp
+    import feedback.routes
     app.register_blueprint(main_bp)
     app.register_blueprint(feedback_bp, url_prefix="/feedback")
 
