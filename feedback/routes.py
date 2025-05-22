@@ -32,7 +32,7 @@ json_path = os.path.join(os.path.dirname(__file__), 'form-data.json')
 with open(json_path, encoding='utf-8') as f:
     questions_data = json.load(f)
 
-@feedback_bp.route("/", methods=["GET", "POST"])
+@feedback_bp.route("/", methods=["GET", "POST"], strict_slashes=False)
 def form():
     selected_class = request.args.get("class", None)
     cursor, conn = get_db_cursor()
