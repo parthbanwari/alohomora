@@ -14,20 +14,20 @@ def create_app():
     conn = init_db()
     app.config['DB_CONN'] = conn
 
-    from feedback.routes import create_table
-    create_table()
+    # Import and register blueprints
+    from main_app import main_bp
+    from feedback import feedback_bp
+    app.register_blueprint(main_bp)
+    app.register_blueprint(feedback_bp, url_prefix="/feedback")
 
-    # Configure session security
+    # Session security configs
     app.config['SESSION_COOKIE_SECURE'] = True
     app.config['SESSION_COOKIE_HTTPONLY'] = True
 
-    # Import blueprints
-    from main_app import main_bp
-    from feedback.routes import feedback_bp
-
-    # Register blueprints
-    app.register_blueprint(main_bp)
-    app.register_blueprint(feedback_bp, url_prefix="/feedback")
+    # 🔧 Ensure the DB table is created within the app context
+    with app.app_context():
+        from feedback.routes import create_table
+        create_table()
 
     # For debugging - print all registered routes
     print("Registered routes:")
