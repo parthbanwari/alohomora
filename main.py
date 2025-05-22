@@ -20,7 +20,7 @@ def create_app():
 
     # Import blueprints
     from main_app import main_bp
-    from feedback import feedback_bp
+    from feedback.routes import feedback_bp
 
     # Register blueprints
     app.register_blueprint(main_bp)
